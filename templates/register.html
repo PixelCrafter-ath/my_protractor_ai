@@ -1,0 +1,255 @@
+{% extends 'layout.html' %}
+{% block body %}
+<main>
+ <section class="d-flex align-items-center my-5 mt-lg-6 mb-lg-5">
+            <div class="container">
+                    <div class="col-12 d-flex align-items-center justify-content-center">
+                        <div class="bg-white shadow-soft border rounded border-light p-4 p-lg-5 w-100 fmxw-650">
+                            <div class="text-center text-md-center mb-4 mt-md-0">
+                                <h1 class="mb-0 h3">Create an Account</h1>
+                            </div>
+							<img src="{{ url_for('static', filename='personal_information.png') }}">
+                            <div class="card-body">
+							    <form action="" method="POST" class="mt-4">
+                                    <div class="form-group">
+                                      <label for="email">EMAIL</label>
+                                      <div class="input-group mb-4">
+                                          <div class="input-group-prepend">
+                                              <span class="input-group-text"><span class="fas fa-envelope"></span></span>
+                                          </div>
+                                          <input name="email" type="email" class="form-control" id="email" placeholder="example@company.com" aria-label="email address" required>   
+                                      </div>
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="name">NAME</label>
+                                    <div class="input-group mb-4">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><span class="fas fa-user"></span></span>
+                                        </div>
+                                        <input name="name" class="form-control" id="name" placeholder="John Doe" type="text" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                  <label for="password">PASSWORD</label>
+                                  <div class="input-group mb-4">
+                                      <div class="input-group-prepend">
+                                          <span class="input-group-text"><span class="fas fa-unlock-alt"></span></span>
+                                      </div>
+                                      <input name="password" type="text" class="form-control" id="password" style="-webkit-text-security:disc;" placeholder="Password" aria-label="Password" required>
+                                  </div>
+                              </div>
+                            <div class="form-group">
+                                <label class="my-1 mr-2" for="inlineFormCustomSelectPref">Choose User Type</label>
+                                <select class="custom-select my-1 mr-sm-2" id="inlineFormCustomSelectPref" name="user_type" required>
+                                    <option value="student">Student</option>
+                                    <option value="teacher">Professor</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                            <label>Take a Photo for Identity Verification</label>
+                            <select id="cameraSelect" class="form-control mb-2" style="display:none;">
+                                <option value="">Select Camera...</option>
+                            </select>
+                            <video id="stream" width="370" height="320" autoplay playsinline>
+                                <canvas id="capture" width="370" height="320">
+                                </canvas>
+                              </video>
+                              <br>
+                                <button id="btn-capture" type="button" class="btn btn-primary justify-content-center">Capture Image</button>
+                            <br><br>
+                                <div id="snapshot"></div>
+                            <input type="hidden" id="image_hidden" name="image_hidden">
+                            </div>
+      <input type="submit" class="btn btn-primary form-group justify-content-center" value="Register">
+    </form>
+    <p>Already have an account?
+        <a href="/login" >Click here</a>.
+      </p>
+  </div>
+  <div>
+  </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<script>
+    // The buttons to start & stop stream and to capture the image
+    var btnCapture = document.getElementById( "btn-capture" );
+
+    // The stream & capture
+    var stream = document.getElementById( "stream" );
+    var capture = document.getElementById( "capture" );
+    var snapshot = document.getElementById( "snapshot" );
+    var cameraSelect = document.getElementById("cameraSelect");
+    
+    // The video stream
+    var cameraStream = null;
+    
+    btnCapture.addEventListener( "click", captureSnapshot );
+
+    // Get available cameras and populate dropdown
+    function getCameras() {
+        navigator.mediaDevices.enumerateDevices()
+        .then(function(devices) {
+            var videoDevices = devices.filter(function(device) {
+                return device.kind === 'videoinput';
+            });
+            
+            if (videoDevices.length > 0) {
+                cameraSelect.style.display = 'block';
+                cameraSelect.innerHTML = '<option value="">Select Camera...</option>';
+                
+                videoDevices.forEach(function(device, index) {
+                    var option = document.createElement('option');
+                    option.value = device.deviceId;
+                    option.text = device.label || 'Camera ' + (index + 1);
+                    cameraSelect.appendChild(option);
+                });
+                
+                // Auto-select first camera (usually PC webcam)
+                if (videoDevices.length === 1) {
+                    cameraSelect.value = videoDevices[0].deviceId;
+                    startStreamingWithDevice(videoDevices[0].deviceId);
+                }
+                
+                console.log("Found " + videoDevices.length + " camera(s)");
+            }
+        })
+        .catch(function(err) {
+            console.error("Error enumerating devices: " + err);
+        });
+    }
+
+    // Start Streaming with specific device
+    function startStreamingWithDevice(deviceId) {
+        var constraints = {
+            video: {
+                deviceId: deviceId ? { exact: deviceId } : undefined,
+                width: { ideal: 640 },
+                height: { ideal: 480 },
+                facingMode: "user"
+            },
+            audio: false
+        };
+        
+        // Stop existing stream if any
+        if (cameraStream) {
+            cameraStream.getTracks().forEach(function(track) {
+                track.stop();
+            });
+        }
+        
+        navigator.mediaDevices.getUserMedia(constraints)
+        .then( function( mediaStream ) {
+    
+          cameraStream = mediaStream;
+          stream.srcObject = mediaStream;
+          stream.play();
+          console.log("✓ Camera loaded successfully");
+        })
+        .catch( function( err ) {
+    
+          console.error( "Camera error: " + err );
+          alert("Unable to access camera. Please check permissions and try again.\n\nError: " + err.message);
+        });
+    }
+    
+    // Start Streaming (auto-select best camera)
+    function startStreaming() {
+    
+      var mediaSupport = 'mediaDevices' in navigator;
+    
+      if( mediaSupport && null == cameraStream ) {
+    
+        // Prefer user-facing camera (PC webcam)
+        var constraints = {
+          video: {
+            width: { ideal: 640 },
+            height: { ideal: 480 },
+            facingMode: "user"  // Front-facing camera (PC webcam)
+          },
+          audio: false
+        };
+        
+        navigator.mediaDevices.getUserMedia(constraints)
+        .then( function( mediaStream ) {
+    
+          cameraStream = mediaStream;
+          stream.srcObject = mediaStream;
+          stream.play();
+          console.log("✓ Camera loaded successfully");
+          
+          // After getting permission, enumerate devices
+          getCameras();
+        })
+        .catch( function( err ) {
+    
+          console.error( "Camera error: " + err );
+          alert("Unable to access camera. Please check permissions and try again.\n\nError: " + err.message);
+        });
+      }
+      else {
+    
+        console.log('Camera already streaming or not supported.');
+    
+        return;
+      }
+    }
+    
+    // Stop Streaming
+    function stopStreaming() {
+    
+      if( null != cameraStream ) {
+    
+        var tracks = cameraStream.getTracks();
+        tracks.forEach(function(track) {
+            track.stop();
+        });
+        stream.load();
+    
+        cameraStream = null;
+      }
+    }
+    
+    function captureSnapshot() {
+    
+      if( null != cameraStream ) {
+    
+        var ctx = capture.getContext( '2d' );
+        var img = new Image();
+    
+        ctx.drawImage( stream, 0, 0, capture.width, capture.height );
+      
+        img.src		= capture.toDataURL( "image/png" );
+        img.width	= 370;
+        img.height	= 320;
+        snapshot.innerHTML = '';
+    
+        snapshot.appendChild( img );
+        var d1 = capture.toDataURL("image/png");
+        var res = d1.replace("data:image/png;base64,", "");
+        console.log("Image captured successfully");
+        snapshot.innerHTML = '';
+        snapshot.appendChild( img );
+        $("#image_hidden").val(res)    
+
+      }
+    }
+    
+    // Camera selection change handler
+    cameraSelect.addEventListener('change', function() {
+        if (this.value) {
+            startStreamingWithDevice(this.value);
+        }
+    });
+    
+    window.onload = function() {
+       startStreaming();
+    }
+    
+    </script>
+{% endblock %}

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>MyProctor.ai</title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="//use.fontawesome.com/releases/v5.0.7/css/all.css">
+
+<!-- Favicon -->
+<link rel="apple-touch-icon" sizes="120x120" href="{{ url_for('static', filename='assets/img/favicon/apple-touch-icon.png') }}">
+<link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='assets/img/favicon/favicon-32x32.png') }}">
+<link rel="icon" type="image/png" sizes="16x16"  href="{{ url_for('static', filename='assets/img/favicon/favicon-16x16.png') }}">
+<link rel="manifest" href="{{ url_for('static', filename='assets/img/favicon/site.webmanifest') }}">
+<link rel="mask-icon" color="#ffffff"  href="{{ url_for('static', filename='assets/img/favicon/safari-pinned-tab.svg') }}">
+
+<!-- Fontawesome -->
+<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='vendor/@fortawesome/fontawesome-free/css/all.min.css') }}">
+
+<!-- Pixel CSS -->
+<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/pixel.css') }}">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+{% block head %}{% endblock %}
+  </head>
+  <body>
+    {% include 'includes/_navbar.html' %}
+    <!--<div class="container">-->
+      {% include 'includes/_messages.html' %}
+      {% block body %}{% endblock %}
+    <!--</div>-->
+
+<!-- Place this tag in your head or just before your close body tag. -->
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+
+<!-- Core -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<!-- Vendor JS - Using CDN since vendor folder is empty -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/jquery.waypoints.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Counter-Up/1.0.0/jquery.counterup.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.countdown/2.2.0/jquery.countdown.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/smooth-scroll/16.1.3/smooth-scroll.polyfills.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/prism.min.js"></script>
+
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  <footer id="sticky-footer" class="py-4">
+  <div class="d-flex text-center justify-content-center align-items-center" role="contentinfo">
+                <p class="font-weight-bold font-medium mb-0">Copyright © MyProctor.ai
+                    <span class="current-year"><script>document.write(new Date().getFullYear())</script>
+                    </span>. All rights reserved.</p>
+  </div><br>
+  <div class="d-flex text-center justify-content-center align-items-center" role="contentinfo">
+        <p class="font-weight-bold font-small mb-0"><span><a href="https://www.narenderkeswani.com/">Made with &#128151 By NARENDER KESWANI</a></span></p>
+</div>
+</footer>
+</body>
+</html>
